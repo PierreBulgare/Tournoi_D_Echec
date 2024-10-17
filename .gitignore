@@ -1,0 +1,17 @@
+# Exclusion des dossiers __pycache__
+__pycache__/
+# Exclusion de l'environnement
+env/
+venv/
+# Exclusion du dossier data (Qui contient les données des joueurs et des tournois)
+data/
+# Exclusion du dossier flake8_rapport
+flake8_rapport/
+# Exclusion des logs
+*.log
+# Exclusion des fichiers/dossiers compressés
+*.zip
+*.rar
+# Exlusion des fichiers html/svg
+*.html
+*.svg
