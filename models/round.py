@@ -1,6 +1,7 @@
 from datetime import datetime
 from models.player import Player
 
+
 class Round:
     def __init__(self, name):
         self.name = name
@@ -12,7 +13,7 @@ class Round:
         """Ajoute un match avec deux joueurs et leurs scores"""
         self.games.append(
             (
-                [player_one.chess_id, player_one_score], 
+                [player_one.chess_id, player_one_score],
                 [player_two.chess_id, player_two_score])
             )
 

@@ -1,5 +1,6 @@
 import settings
 
+
 class PlayerView:
     @staticmethod
     def display_player(player):
@@ -22,14 +23,14 @@ class PlayerView:
             chess_id = input("Identifiant National d'Échecs du joueur (ex. AB12345) : ")
             if not settings.check_empty(chess_id):
                 if player_controller.check_chess_id(chess_id):
-                    if player_controller.check_player_exists(chess_id, error = False):
+                    if player_controller.check_player_exists(chess_id, error=False):
                         break
         return chess_id
-    
+
     @staticmethod
     def prompt_for_player_details(player_controller):
         """Demande à l'utilisateur d'entrer les informations d'un joueur"""
-        
+
         # Identifiant Nationel d'Échecs
         while True:
             chess_id = input("Entrez l'identifiant national d'échecs (ex. AB12345) : ")

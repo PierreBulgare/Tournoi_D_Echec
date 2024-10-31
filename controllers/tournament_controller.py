@@ -117,3 +117,74 @@ class TournamentController:
                 print("Aucun tour n'a été ajouté, aucun match valide n'a pu être généré.")
         else:
             print("Erreur ! Ce tournoi n'a pas assez de participants.")
+
+    def end_round(self):
+        """Demande l'issue du tour et le termine"""
+
+        # Récupération du tournoi
+        tournament_name = self.find_tournament()
+        tournament = Tournament.load(tournament_name)
+
+        if not tournament.rounds:
+            print("Aucun round n'a encore été joué pour ce tournoi.")
+            return
+
+        # Récupérer le round actuel
+        current_round = tournament.rounds[-1]
+
+        # Demander le résultat pour chaque match
+        for game in current_round.games:
+            player_one_id, _ = game[0]
+            player_two_id, _ = game[1]
+
+            # Demander si c'est une égalité
+            result = input(
+                f"Le match entre {player_one_id} et {player_two_id} est-il une égalité ? (o/n) : "
+            ).strip().lower()
+
+            if result == 'o':
+                # Si égalité, 0,5 point pour chaque joueur
+                game[0][1] = 0.5
+                game[1][1] = 0.5
+            else:
+                # Sinon, demander qui est le gagnant
+                winner_id = input(f"Qui est le gagnant ? ({player_one_id}/{player_two_id}) : ").strip()
+
+                if winner_id == player_one_id:
+                    game[0][1] = 1  # 1 point pour le gagnant
+                    game[1][1] = 0  # 0 point pour le perdant
+                elif winner_id == player_two_id:
+                    game[0][1] = 0  # 0 point pour le perdant
+                    game[1][1] = 1  # 1 point pour le gagnant
+                else:
+                    print("Entrée invalide, réessayez.")
+                    continue
+
+        # Marquer le round comme terminé
+        current_round.end_round()
+
+        # Calcul et attribution des points pour chaque match
+        for game in current_round.games:
+            player_one_id, player_one_score = game[0]
+            player_two_id, player_two_score = game[1]
+
+            # Récupérer les joueurs
+            player_one = next(player for player in tournament.participants if player.chess_id == player_one_id)
+            player_two = next(player for player in tournament.participants if player.chess_id == player_two_id)
+
+            # Mettre à jour les scores des joueurs
+            player_one.add_points(player_one_score)
+            player_two.add_points(player_two_score)
+
+        # Incrémenter le numéro du tour actuel
+        tournament.current_round_number += 1
+
+        # Sauvegarder les changements
+        tournament.save()
+        print(f"Le round {current_round.name} est maintenant terminé.")
+
+        # Vérifier si le tournoi est terminé
+        if len(tournament.rounds) >= tournament.total_rounds:
+            print(f"Le tournoi {tournament.name} est maintenant terminé.")
+        else:
+            print(f"Le tournoi {tournament.name} est prêt pour le round {tournament.current_round_number}.")

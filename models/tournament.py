@@ -5,8 +5,9 @@ import settings
 
 TOURNAMENTS_PATH = "data/tournaments/"
 
+
 class Tournament:
-    def __init__(self, name, location, start_date, end_date, description, total_rounds = 4):
+    def __init__(self, name, location, start_date, end_date, description, total_rounds=4):
         self.name = name
         self.description = description
         self.location = location
@@ -72,7 +73,9 @@ class Tournament:
                 {
                     "Nom": round.name,
                     "Date de début": round.start_datetime.strftime("%d-%m-%Y à %H:%M"),
-                    "Date de fin": round.end_datetime.strftime("%d-%m-%Y à %H:%M") if round.end_datetime else "Non terminé",
+                    "Date de fin": round.end_datetime.strftime("%d-%m-%Y à %H:%M")
+                    if round.end_datetime
+                    else "Non terminé",
                     "Matchs": [
                         {
                             "Joueur1": game[0][0],
@@ -86,7 +89,7 @@ class Tournament:
 
         }
 
-        # Formate le nom du tournoir pour l'adapter en nom de fichier
+        # Formate le nom du tournoi pour l'adapter en nom de fichier
         file_name = settings.format_file_name(self.name)
 
         # Nomme le fichier à partir de l'identifiant national d'échecs (ID.json)
@@ -107,19 +110,19 @@ class Tournament:
         # Vérifie si le fichier existe
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Le tournoi {name} n'existe pas.")
-        
+
         # Retourne une instance de Tournament avec les informations du JSON
         with open(file_path, "r", encoding="utf-8") as file:
             tournament_data = json.load(file)
             tournament = Tournament(
-                name = tournament_data["Nom"],
-                location = tournament_data["Lieu"],
-                start_date = tournament_data["Date de début"],
-                end_date = tournament_data["Date de fin"],
-                total_rounds = tournament_data["Nombre de tours"],
-                description = tournament_data["Description"]
+                name=tournament_data["Nom"],
+                location=tournament_data["Lieu"],
+                start_date=tournament_data["Date de début"],
+                end_date=tournament_data["Date de fin"],
+                total_rounds=tournament_data["Nombre de tours"],
+                description=tournament_data["Description"]
             )
-            
+
             tournament.current_round_number = tournament_data["Numéro du tour actuel"]
 
             # Charge les joueurs à partir de leurs INE
@@ -131,14 +134,16 @@ class Tournament:
             for round_data in tournament_data["Liste des tours"]:
                 round_instance = Round(round_data["Nom"])
                 round_instance.start_datetime = datetime.strptime(round_data["Date de début"], "%d-%m-%Y à %H:%M")
-                round_instance.end_datetime = datetime.strptime(round_data["Date de fin"], "%d-%m-%Y à %H:%M") if round_data["Date de fin"] != "Non terminé" else None
-                
+                round_instance.end_datetime = datetime.strptime(
+                    round_data["Date de fin"], "%d-%m-%Y à %H:%M"
+                    ) if round_data["Date de fin"] != "Non terminé" else None
+
                 # Charger les matchs du tour
                 for game in round_data["Matchs"]:
                     player_one = Player.load(game["Joueur1"])
                     player_two = Player.load(game["Joueur2"])
                     round_instance.add_game(player_one, game["Score1"], player_two, game["Score2"])
-                
+
                 tournament.rounds.append(round_instance)
 
             return tournament

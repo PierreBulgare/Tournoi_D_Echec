@@ -1,5 +1,6 @@
 import settings
 
+
 class TournamentView:
     @staticmethod
     def display_tournament(tournament):
@@ -49,7 +50,7 @@ class TournamentView:
             if not settings.check_empty(description):
                 break
         return name, location, start_date, end_date, description
-    
+
     @staticmethod
     def prompt_to_find_tournament(tournament_controller):
         """Demande à l'utilisateur le nom d'un tournoi"""
@@ -62,7 +63,7 @@ class TournamentView:
                 tournament_date = input("Date du tournoi : ")
                 if not settings.check_empty(tournament_date):
                     break
-            if tournament_controller.check_tournament_exists(tournament_name, tournament_date, error = False):
+            if tournament_controller.check_tournament_exists(tournament_name, tournament_date, error=False):
                 break
 
         return tournament_name, tournament_date

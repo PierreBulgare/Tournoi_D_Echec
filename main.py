@@ -1,6 +1,7 @@
 from controllers.player_controller import PlayerController
 from controllers.tournament_controller import TournamentController
 
+
 def main():
     player_controller = PlayerController()
     tournament_controller = TournamentController()
@@ -14,6 +15,7 @@ def main():
         print("4. Afficher la liste des tournois")
         print("5. Ajouter un joueur à un tournoi")
         print("6. Ajouter un tour à un tournoi")
+        print("7. Terminer un tour")
         print("0. Quitter")
         choice = input("Choisissez une option : ")
 
@@ -35,11 +37,15 @@ def main():
         # Ajouter un tour à un tournoi
         elif choice == '6':
             tournament_controller.add_round_to_tournament()
+        # Terminer le tour d'un tournoi
+        elif choice == '7':
+            tournament_controller.end_round()
         # Quitter le programme
         elif choice == '0':
             break
         else:
             print("Option invalide, veuillez réessayer.")
+
 
 if __name__ == '__main__':
     main()

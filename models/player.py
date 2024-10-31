@@ -4,12 +4,18 @@ import os
 # Défini l'emplacement du répertoire contenant les informations des joueurs
 PLAYERS_PATH = "data/players/"
 
+
 class Player:
     def __init__(self, chess_id, last_name, first_name, birth_date):
         self.chess_id = chess_id
         self.last_name = last_name
         self.first_name = first_name
         self.birth_date = birth_date
+        self.points = 0  # Total des points accumulés
+
+    def add_points(self, points: float):
+        """Ajoute des points au joueur."""
+        self.points += points
 
     def save(self):
         """Enregistre les informations du joueur dans un fichier JSON"""
@@ -34,7 +40,6 @@ class Player:
 
         print(f"Les données de {self.first_name} {self.last_name} ont été enregistré avec succès.")
 
-
     @staticmethod
     def load(chess_id):
         """Charge les informations d'un joueur à partir d'un fichier JSON basé sur son identifiant national d'échecs"""
@@ -44,17 +49,17 @@ class Player:
         # Si le fichier n'existe pas
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Le joueur avec l'INE {chess_id} n'existe pas.")
-        
+
         # Retourne une instance de Player avec les informations du JSON
         with open(file_path, "r", encoding="utf-8") as file:
             player_data = json.load(file)
 
         # Retourne une instance de Player
         return Player(
-            chess_id = player_data["Identifiant National d'Échecs"],
-            last_name = player_data["Nom"],
-            first_name = player_data["Prénom"],
-            birth_date = player_data["Date de Naissance"]
+            chess_id=player_data["Identifiant National d'Échecs"],
+            last_name=player_data["Nom"],
+            first_name=player_data["Prénom"],
+            birth_date=player_data["Date de Naissance"]
         )
 
     @staticmethod

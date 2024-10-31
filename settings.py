@@ -1,13 +1,15 @@
-def format_file_name(file_name)-> str:
+def format_file_name(file_name) -> str:
     return file_name.replace(" ", "_").replace("'", "_")
 
-def check_empty(text: str)-> bool:
+
+def check_empty(text: str) -> bool:
     if len(text) == 0:
         print("Erreur ! Ce champ ne peut pas être vide.")
         return True
     return False
 
-def check_date(date: str)-> bool:
+
+def check_date(date: str) -> bool:
     # Vérifie si la date est bien au format JJ-MM-AAAA (Ex: 10-10-2024)
     if date[2] == "-" and date[5] == "-":
         # Vérifie si le jour est numérique et se situe entre 1 et 31
