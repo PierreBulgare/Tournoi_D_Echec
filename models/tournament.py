@@ -115,12 +115,12 @@ class Tournament:
         with open(file_path, "r", encoding="utf-8") as file:
             tournament_data = json.load(file)
             tournament = Tournament(
-                name=tournament_data["Nom"],
-                location=tournament_data["Lieu"],
-                start_date=tournament_data["Date de début"],
-                end_date=tournament_data["Date de fin"],
-                total_rounds=tournament_data["Nombre de tours"],
-                description=tournament_data["Description"]
+                tournament_data["Nom"],
+                tournament_data["Lieu"],
+                tournament_data["Date de début"],
+                tournament_data["Date de fin"],
+                tournament_data["Description"],
+                tournament_data["Nombre de tours"],
             )
 
             tournament.current_round_number = tournament_data["Numéro du tour actuel"]
