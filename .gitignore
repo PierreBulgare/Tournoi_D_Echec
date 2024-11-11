@@ -5,6 +5,8 @@ env/
 venv/
 # Exclusion du dossier data (Qui contient les données des joueurs et des tournois)
 data/
+# Exclusion du dossier temp (Qui contient la version précédentes des json joueurs et journois v-1)
+temp/
 # Exclusion du dossier reports
 reports/
 # Exclusion des logs
@@ -14,3 +16,4 @@ reports/
 *.rar
 # Exlusion des fichiers html/svg/txt/css
 *.txt
+*.json

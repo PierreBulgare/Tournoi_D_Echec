@@ -1,9 +1,11 @@
 import json
 import os
+import shutil
 from datetime import datetime
 import settings
 
 TOURNAMENTS_PATH = "data/tournaments/"
+TEMP_PATH = "temp/tournaments"
 
 
 class Tournament:
@@ -108,9 +110,12 @@ class Tournament:
     def load(name):
         """Charge un tournoi à partir d'un fichier JSON."""
         file_path = os.path.join(TOURNAMENTS_PATH, f"{settings.format_file_name(name)}.json")
-
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Le tournoi {name} n'existe pas.")
+
+        # Copie du fichier dans le dossier temporaire
+        os.makedirs(TEMP_PATH, exist_ok=True)
+        shutil.copy(file_path, os.path.join(TEMP_PATH, f"{settings.format_file_name(name)}.json"))
 
         with open(file_path, "r", encoding="utf-8") as file:
             tournament_data = json.load(file)

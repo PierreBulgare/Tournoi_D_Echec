@@ -24,6 +24,7 @@ def main():
         print("11. Générer les données d'un tournoi")
         print("12. Générer la liste des joueurs d'un tournoi")
         print("13. Générer la liste des tours et matchs d'un tournoi")
+        print("=== Autres fonctionnalités ===")
         print("0. Quitter")
         choice = input("Choisissez une option : ")
 

@@ -1,8 +1,10 @@
 import json
 import os
+import shutil
 
 # Défini l'emplacement du répertoire contenant les informations des joueurs
 PLAYERS_PATH = "data/players/"
+TEMP_PATH = "temp/players"
 
 
 class Player:
@@ -47,6 +49,11 @@ class Player:
         file_path = os.path.join(PLAYERS_PATH, f'{chess_id}.json')
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Le joueur avec l'INE {chess_id} n'existe pas.")
+
+        # Copie du fichier dans le dossier temporaire
+        os.makedirs(TEMP_PATH, exist_ok=True)
+        shutil.copy(file_path, os.path.join(TEMP_PATH, f'{chess_id}.json'))
+
         with open(file_path, "r", encoding="utf-8") as file:
             player_data = json.load(file)
 
