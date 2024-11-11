@@ -1,8 +1,10 @@
 # Application de Gestion de Tournoi d'Échecs
 
 ## Informations sur la version
-**Version** : 1.0.0  
-**Date** : 10/11/2024 
+**Version** : 1.0.0
+
+**Date** : 10/11/2024
+
 **Auteur** : Pierre BULGARE
 
 ## Description
