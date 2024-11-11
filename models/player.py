@@ -6,77 +6,57 @@ PLAYERS_PATH = "data/players/"
 
 
 class Player:
-    def __init__(self, chess_id, last_name, first_name, birth_date):
+    def __init__(self, chess_id, last_name, first_name, birth_date, points=None):
         self.chess_id = chess_id
         self.last_name = last_name
         self.first_name = first_name
         self.birth_date = birth_date
-        self.points = 0  # Total des points accumulés
+        # Initialiser les points pour chaque tournoi comme un dictionnaire
+        self.points = points if points else {}
 
-    def add_points(self, points: float):
-        """Ajoute des points au joueur."""
-        self.points += points
+    def add_points(self, tournament_name: str, points: float, tournament_date: str):
+        """Ajoute des points pour un tournoi spécifique en utilisant la date du tournoi."""
+        if tournament_name not in self.points:
+            self.points[tournament_name] = {
+                "date": tournament_date,
+                "points": points
+            }
+        else:
+            # Mettre à jour uniquement les points pour le tournoi en cours
+            self.points[tournament_name]["points"] += points
 
     def save(self):
         """Enregistre les informations du joueur dans un fichier JSON"""
-
-        # Crée le répertoire s'il n'existe pas
         os.makedirs(PLAYERS_PATH, exist_ok=True)
-
-        # Regroupe les informations dans un dictionnaire
+        # Inclure les points par tournoi dans les données du joueur
         player_data = {
             "Identifiant National d'Échecs": self.chess_id,
             "Nom": self.last_name,
             "Prénom": self.first_name,
-            "Date de Naissance": self.birth_date
+            "Date de Naissance": self.birth_date,
+            "Points": self.points  # Points par tournoi
         }
-
-        # Nomme le fichier à partir de l'Identifiant National d'Échecs (INE.json)
         file_path = os.path.join(PLAYERS_PATH, f"{self.chess_id}.json")
-
-        # Sauvegarde les informations du dictionnaire dans le fichier json
         with open(file_path, "w", encoding="utf-8") as file:
             json.dump(player_data, file, ensure_ascii=False, indent=4)
-
-        print(f"Les données de {self.first_name} {self.last_name} ont été enregistré avec succès.")
+        print(f"Les données de {self.first_name} {self.last_name} ont été enregistrées avec succès.")
 
     @staticmethod
     def load(chess_id):
         """Charge les informations d'un joueur à partir d'un fichier JSON basé sur son identifiant national d'échecs"""
-
         file_path = os.path.join(PLAYERS_PATH, f'{chess_id}.json')
-
-        # Si le fichier n'existe pas
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Le joueur avec l'INE {chess_id} n'existe pas.")
-
-        # Retourne une instance de Player avec les informations du JSON
         with open(file_path, "r", encoding="utf-8") as file:
             player_data = json.load(file)
 
-        # Retourne une instance de Player
+        # Charger les points avec gestion des tournois
+        points = player_data.get("Points", {})
+
         return Player(
             chess_id=player_data["Identifiant National d'Échecs"],
             last_name=player_data["Nom"],
             first_name=player_data["Prénom"],
-            birth_date=player_data["Date de Naissance"]
+            birth_date=player_data["Date de Naissance"],
+            points=points
         )
-
-    @staticmethod
-    def list_all_players():
-        """Retourne la liste de tous les joueurs sauvegardés."""
-
-        # Initialise une liste qui va accueillir les instances de Player
-        players = []
-
-        # Si le répertoire data/players existe
-        if os.path.exists(PLAYERS_PATH):
-            for file_name in os.listdir(PLAYERS_PATH):
-                # Vérifie que le fichier est un fichier JSON
-                if file_name.endswith(".json"):
-                    # Récupère l'INE (Identidiant National d'Échecs) à partir du nom du fichier
-                    chess_id = file_name.split('.')[0]
-                    player = Player.load(chess_id)
-                    players.append(player)
-
-        return players

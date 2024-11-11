@@ -16,7 +16,7 @@ class Tournament:
         self.total_rounds = total_rounds
         self.participants = []
         self.rounds = []
-        self.current_round_number = 1
+        self.current_round_number = 0
 
     def add_participant(self, player):
         """Ajoute un participant au tournoi"""
@@ -29,7 +29,6 @@ class Tournament:
         """Ajoute un tour au tournoi"""
         if len(self.rounds) < self.total_rounds:
             self.rounds.append(round)
-            self.current_round_number += 1
         else:
             print("Impossible d'ajouter ce tour. Le nombre maximal de tours est atteint.")
 
@@ -54,8 +53,6 @@ class Tournament:
     def save(self):
         """Enregistre les informations du joueur dans un fichier JSON"""
 
-        # Défini l'emplacement du répertoire contenant les informations des tournois
-
         # Crée le répertoire s'il n'existe pas
         os.makedirs(TOURNAMENTS_PATH, exist_ok=True)
 
@@ -72,16 +69,22 @@ class Tournament:
             "Liste des tours": [
                 {
                     "Nom": round.name,
-                    "Date de début": round.start_datetime.strftime("%d-%m-%Y à %H:%M"),
-                    "Date de fin": round.end_datetime.strftime("%d-%m-%Y à %H:%M")
+                    "Date et heure de début": round.start_datetime.strftime("%d-%m-%Y %H:%M"),
+                    "Date et heure de fin": round.end_datetime.strftime("%d-%m-%Y %H:%M")
                     if round.end_datetime
                     else "Non terminé",
                     "Matchs": [
                         {
-                            "Joueur1": game[0][0],
-                            "Score1": game[0][1],
-                            "Joueur2": game[1][0],
-                            "Score2": game[1][1]
+                            "Joueur1": {
+                                "id": game["Joueur1"]["id"],
+                                "couleur": game["Joueur1"]["couleur"],
+                                "score": game["Joueur1"]["score"]
+                            },
+                            "Joueur2": {
+                                "id": game["Joueur2"]["id"],
+                                "couleur": game["Joueur2"]["couleur"],
+                                "score": game["Joueur2"]["score"]
+                            }
                         } for game in round.games
                     ]
                 } for round in self.rounds
@@ -104,14 +107,11 @@ class Tournament:
     @staticmethod
     def load(name):
         """Charge un tournoi à partir d'un fichier JSON."""
-
         file_path = os.path.join(TOURNAMENTS_PATH, f"{settings.format_file_name(name)}.json")
 
-        # Vérifie si le fichier existe
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Le tournoi {name} n'existe pas.")
 
-        # Retourne une instance de Tournament avec les informations du JSON
         with open(file_path, "r", encoding="utf-8") as file:
             tournament_data = json.load(file)
             tournament = Tournament(
@@ -125,24 +125,31 @@ class Tournament:
 
             tournament.current_round_number = tournament_data["Numéro du tour actuel"]
 
-            # Charge les joueurs à partir de leurs INE
+            # Charger les participants en tant qu'objets Player
             from models.player import Player
             tournament.participants = [Player.load(chess_id) for chess_id in tournament_data["Liste des participants"]]
 
-            # Charge les tours à partir des noms de tour du tournoi
+            # Charger les rounds
             from models.round import Round
             for round_data in tournament_data["Liste des tours"]:
+                start_datetime = datetime.strptime(round_data["Date et heure de début"], "%d-%m-%Y %H:%M")
                 round_instance = Round(round_data["Nom"])
-                round_instance.start_datetime = datetime.strptime(round_data["Date de début"], "%d-%m-%Y à %H:%M")
-                round_instance.end_datetime = datetime.strptime(
-                    round_data["Date de fin"], "%d-%m-%Y à %H:%M"
-                    ) if round_data["Date de fin"] != "Non terminé" else None
+                round_instance.start_datetime = start_datetime
 
-                # Charger les matchs du tour
+                round_instance.end_datetime = datetime.strptime(
+                    round_data["Date et heure de fin"], "%d-%m-%Y %H:%M"
+                ) if round_data["Date et heure de fin"] != "Non terminé" else None
+
+                # Charger les matchs avec seulement les identifiants des joueurs
                 for game in round_data["Matchs"]:
-                    player_one = Player.load(game["Joueur1"])
-                    player_two = Player.load(game["Joueur2"])
-                    round_instance.add_game(player_one, game["Score1"], player_two, game["Score2"])
+                    player_one_id = game["Joueur1"]["id"]
+                    player_two_id = game["Joueur2"]["id"]
+                    player_one = Player.load(player_one_id)
+                    player_two = Player.load(player_two_id)
+                    round_instance.add_game(
+                        player_one, game["Joueur1"]["couleur"], game["Joueur1"]["score"],
+                        player_two,  game["Joueur2"]["couleur"], game["Joueur2"]["score"]
+                    )
 
                 tournament.rounds.append(round_instance)
 

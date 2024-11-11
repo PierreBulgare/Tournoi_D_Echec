@@ -5,6 +5,8 @@ env/
 venv/
 # Exclusion du dossier data (Qui contient les données des joueurs et des tournois)
 data/
+# Exclusion du dossier reports
+reports/
 # Exclusion du dossier flake8_rapport
 flake8_rapport/
 # Exclusion des logs
@@ -12,6 +14,8 @@ flake8_rapport/
 # Exclusion des fichiers/dossiers compressés
 *.zip
 *.rar
-# Exlusion des fichiers html/svg
+# Exlusion des fichiers html/svg/txt/css
 *.html
+*.txt
 *.svg
+*.css

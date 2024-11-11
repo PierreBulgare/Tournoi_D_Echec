@@ -2,6 +2,9 @@ import os
 from models.player import Player
 from views.player_view import PlayerView
 
+# Défini l'emplacement du répertoire contenant les informations des joueurs
+PLAYERS_PATH = "data/players/"
+
 
 class PlayerController:
     def check_player_exists(self, chess_id: str, error=True) -> bool:
@@ -41,21 +44,50 @@ class PlayerController:
     def add_player(self):
         """Ajoute un nouveau joueur en demandant les informations à l'utilisateur"""
         last_name, first_name, birth_date, chess_id = PlayerView.prompt_for_player_details(self)
-        player = Player(chess_id, last_name, first_name, birth_date)
+        player = Player(chess_id.upper(), last_name.capitalize(), first_name.capitalize(), birth_date)
         # Sauvegarde les données du joueurs dans data/players
         player.save()
         print(f"Joueur {first_name} {last_name} ajouté avec succès.")
 
     def list_players(self):
-        """Affiche la liste de tous les joueurs sauvegardés"""
-        players = Player.list_all_players()
+        """Retourne une liste de tous les joueurs sauvegardés dans les fichiers JSON"""
+        players = []
+        if os.path.exists(PLAYERS_PATH):
+            for file_name in os.listdir(PLAYERS_PATH):
+                if file_name.endswith(".json"):
+                    chess_id = file_name.split('.')[0]
+                    try:
+                        player = Player.load(chess_id)
+                        players.append(player)
+                    except FileNotFoundError:
+                        print(f"Erreur : Le fichier {file_name} est introuvable.")
+
         PlayerView.display_players_list(players)
 
-    def list_players_alphabetically(self):
-        """Affiche la liste de tous les joueurs par ordre alphabétique."""
+    def generate_players_list_alphabetically(self):
+        """Génère la liste des joueurs par ordre alphabétique en TXT et HTML"""
         players = Player.list_all_players()
-        players_sorted = sorted(players, key=lambda p: p.last_name)  # Trier par nom de famille
+        players_sorted = sorted(players, key=lambda p: p.last_name)
 
-        print("\nListe des joueurs par ordre alphabétique :")
-        for player in players_sorted:
-            print(f"{player.last_name}, {player.first_name} (INE: {player.chess_id})")
+        # Créer le dossier "reports" s'il n'existe pas
+        os.makedirs("reports", exist_ok=True)
+        file_path_txt = 'reports/liste_joueurs_alphabetique.txt'
+        file_path_html = 'reports/liste_joueurs_alphabetique.html'
+
+        with open(file_path_txt, 'w', encoding='utf-8') as file:
+            file.write("Liste des joueurs par ordre alphabétique :\n")
+            for player in players_sorted:
+                file.write(f"{player.last_name.upper()} {player.first_name} (INE: {player.chess_id})\n")
+
+        with open(file_path_html, 'w', encoding='utf-8') as file:
+            file.write(
+                '<html><head><meta charset="utf-8">'
+                '<title>Liste des joueurs par ordre alphabétique</title>'
+                '</head><body>'
+                '<h1>Liste des joueurs par ordre alphabétique</h1><ul>'
+            )
+            for player in players_sorted:
+                file.write(f"<li>{player.last_name} {player.first_name} (<b>INE</b>: {player.chess_id})</li>")
+            file.write("</ul></body></html>")
+
+        print(f"Rapports générés : \nTXT: {file_path_txt}\nHTML: {file_path_html}")

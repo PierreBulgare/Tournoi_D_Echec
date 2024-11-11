@@ -12,9 +12,12 @@ class PlayerView:
     @staticmethod
     def display_players_list(players):
         """Affiche une liste de joueurs"""
-        for player in players:
-            print('-' * 20)
-            PlayerView.display_player(player)
+        if players:
+            for player in players:
+                print('-' * 20)
+                PlayerView.display_player(player)
+        else:
+            print("Aucun joueur n'est disponible dans votre base de donnée.")
 
     @staticmethod
     def prompt_to_find_player(player_controller):
