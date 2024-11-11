@@ -7,15 +7,10 @@ venv/
 data/
 # Exclusion du dossier reports
 reports/
-# Exclusion du dossier flake8_rapport
-flake8_rapport/
 # Exclusion des logs
 *.log
 # Exclusion des fichiers/dossiers compressés
 *.zip
 *.rar
 # Exlusion des fichiers html/svg/txt/css
-*.html
 *.txt
-*.svg
-*.css
