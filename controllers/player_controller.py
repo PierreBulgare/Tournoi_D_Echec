@@ -49,7 +49,7 @@ class PlayerController:
         player.save()
         print(f"Joueur {first_name} {last_name} ajouté avec succès.")
 
-    def list_players(self):
+    def list_players(self, generate=False):
         """Retourne une liste de tous les joueurs sauvegardés dans les fichiers JSON"""
         players = []
         if os.path.exists(PLAYERS_PATH):
@@ -61,12 +61,14 @@ class PlayerController:
                         players.append(player)
                     except FileNotFoundError:
                         print(f"Erreur : Le fichier {file_name} est introuvable.")
-
-        PlayerView.display_players_list(players)
+        if generate:
+            return players
+        else:
+            PlayerView.display_players_list(players)
 
     def generate_players_list_alphabetically(self):
         """Génère la liste des joueurs par ordre alphabétique en TXT et HTML"""
-        players = Player.list_all_players()
+        players = self.list_players(generate=True)
         players_sorted = sorted(players, key=lambda p: p.last_name)
 
         # Créer le dossier "reports" s'il n'existe pas
